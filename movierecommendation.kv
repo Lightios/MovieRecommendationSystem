@@ -1,0 +1,59 @@
+MDScreen:
+    md_bg_color: self.theme_cls.backgroundColor
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 10
+
+        MDTextField:
+            id: user_id_input
+            hint_text: 'Enter User ID (or leave blank for new user)'
+            mode: "filled"
+
+        MDTextField:
+            id: year_input
+            hint_text: 'Enter Release Year'
+            mode: "filled"
+
+        MDButton:
+            id: search_button
+            on_press: app.search_movies()
+            MDButtonText:
+                text: 'Search Movies by Year'
+
+        MDDropDownItem:
+            id: movie_dropdown
+            pos_hint: {'center_x': 0.5}
+            on_press: app.search_movies()
+            MDDropDownItemText:
+                text: 'Select a Movie'
+                id: dropdown_text
+
+        MDTextField:
+            id: rating_input
+            hint_text: 'Enter Rating (0.5-5)'
+            mode: "filled"
+
+        MDButton:
+            id: submit_button
+            on_press: app.submit_rating()
+
+            MDButtonText:
+                text: 'Submit Rating'
+
+        MDButton:
+            id: recommend_button
+            on_press: app.show_recommendations()
+            MDButtonText:
+                text: 'Get Recommendations'
+
+        MDButton:
+            id: predict_button
+            on_press: app.predict_rating()
+            MDButtonText:
+                text: 'Predict Movie Rating'
+
+        MDLabel:
+            id: result_label
+            size_hint_y: None
