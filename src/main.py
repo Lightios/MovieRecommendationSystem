@@ -82,4 +82,5 @@ movies = pd.read_pickle(movies_path)
 
 
 if __name__ == '__main__':
-    MovieRecommendationApp(model, user_movie_matrix, user_movie_matrix_normalized, movies, user_means).run()
+    # MovieRecommendationApp(model, user_movie_matrix, user_movie_matrix_normalized, movies, user_means).run()
+    MovieRecommendationApp(model, user_movie_matrix, movies, user_means).run()

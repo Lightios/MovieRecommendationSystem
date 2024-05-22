@@ -7,13 +7,13 @@ from src.model.model_functions import get_movie_recommendations, get_movie_id_by
 
 
 class MovieRecommendationApp(MDApp):
-    def __init__(self, svd, user_movie_matrix, user_movie_matrix_normalized, movies, user_means, **kwargs):
+    def __init__(self, svd, user_movie_matrix, movies, user_means, **kwargs):
         super().__init__(**kwargs)
         self.svd = svd
         self.user_movie_matrix = user_movie_matrix
         self.movies = movies
         self.user_means = user_means
-        self.user_movie_matrix_normalized = user_movie_matrix_normalized
+        # self.user_movie_matrix_normalized = user_movie_matrix_normalized
         self.user_id = 2000
         self.user_ratings = {}
 
@@ -78,7 +78,7 @@ class MovieRecommendationApp(MDApp):
         # else:
         #     # Assign new ID
         #     user_id = self.user_movie_matrix.index.max() + 1
-
+        self.update_user_ratings()
         recommendations = get_movie_recommendations(self.user_id, self.svd, self.user_movie_matrix_normalized, self.movies, self.user_means)
         recommended_titles = recommendations['title'].tolist()
         self.root.ids.result_label.text = 'Recommended Movies:\n' + '\n'.join(recommended_titles)
