@@ -4,12 +4,15 @@ MDScreen:
     MDBoxLayout:
         orientation: 'vertical'
         padding: 10
-        spacing: 10
+        spacing: 40
 
         MDTextField:
             id: user_id_input
-            hint_text: 'Enter User ID (or leave blank for new user)'
             mode: "filled"
+
+            MDTextFieldHelperText:
+                text: "Enter User ID (or leave blank for new user)"
+                mode: "persistent"
 
         MDTextField:
             id: year_input

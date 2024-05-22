@@ -1,31 +1,84 @@
-def get_movie_recommendations(user_id, user_movie_matrix, svd, movies, num_recommendations=10):
-    user_idx = user_id - 1  # Indeksy w macierzy zaczynają się od 0
-    user_ratings = user_movie_matrix.iloc[user_idx].values
-    user_svd = svd.transform(user_ratings.reshape(1, -1))
-    user_reconstructed = svd.inverse_transform(user_svd).flatten()
-    unrated_movies_indices = np.where(user_ratings == 0)[0]
-    predicted_ratings = user_reconstructed[unrated_movies_indices]
-    top_indices = np.argsort(predicted_ratings)[::-1][:num_recommendations]
-    top_movie_ids = user_movie_matrix.columns[unrated_movies_indices[top_indices]]
-    return movies[movies['movieId'].isin(top_movie_ids)]
+import pickle
+
+def load_model(model_path):
+    with open(model_path, 'rb') as f:
+        model = pickle.load(f)
+    return model
 
 
-def predict_movie_rating(user_id, movie_title, user_movie_matrix, svd, movies):
+import numpy as np
+import pandas as pd
+
+
+def get_movie_recommendations(user_id, model, user_movie_matrix, movies, n_recommendations=10):
+    # Sprawdzenie, czy użytkownik istnieje w macierzy
     if user_id not in user_movie_matrix.index:
-        return None
+        raise ValueError(f'User ID {user_id} not found in the user-movie matrix.')
 
-    user_idx = user_id - 1
-    user_ratings = user_movie_matrix.iloc[user_idx].values
-    movie_id = movies[movies['title'] == movie_title]['movieId'].values[0]
-    movie_idx = user_movie_matrix.columns.get_loc(movie_id)
+    # Ekstrakcja danych użytkownika
+    user_ratings = user_movie_matrix.loc[user_id].values.reshape(1, -1)
 
-    user_svd = svd.transform(user_ratings.reshape(1, -1))
-    user_reconstructed = svd.inverse_transform(user_svd).flatten()
+    # Transformacja danych użytkownika
+    user_transformed = model.named_steps['svd'].transform(user_ratings)
 
-    predicted_rating = user_reconstructed[movie_idx]
+    # Rekonstrukcja ocen użytkownika
+    user_reconstructed = model.named_steps['svd'].inverse_transform(user_transformed)
+
+    # Różnica między rekonstrukcją a rzeczywistymi ocenami
+    diff = user_reconstructed - user_ratings
+
+    # Tworzenie ramki danych z różnicami
+    diff_df = pd.DataFrame(diff.flatten(), index=user_movie_matrix.columns, columns=['diff'])
+
+    # Filtrowanie filmów, które użytkownik nie ocenił
+    unseen_movies = diff_df[user_movie_matrix.loc[user_id] == 0]
+
+    # Sortowanie filmów według różnicy w ocenach (im wyższa różnica, tym wyższa rekomendacja)
+    recommendations = unseen_movies.sort_values(by='diff', ascending=False).head(n_recommendations)
+
+    # Łączenie rekomendacji z tytułami filmów
+    recommended_movie_ids = recommendations.index
+    recommended_movies = movies[movies['movieId'].isin(recommended_movie_ids)]
+
+    return recommended_movies
+
+
+def get_movie_id_by_title(title, movies):
+    # Szukaj filmu w DataFrame `movies`
+    movie = movies[movies['title'].str.contains(title, case=False, na=False)]
+
+    # Sprawdź, czy znaleziono film
+    if movie.empty:
+        raise ValueError(f'No movie found with title containing: {title}')
+
+    # Jeśli jest więcej niż jeden wynik, zwróć wszystkie pasujące ID
+    movie_ids = movie['movieId'].tolist()
+    return movie_ids
+
+
+def predict_rating(user_id, movie_id, model, user_movie_matrix, user_means):
+    # Sprawdzenie, czy użytkownik istnieje w macierzy
+    if user_id not in user_movie_matrix.index:
+        raise ValueError(f'User ID {user_id} not found in the user-movie matrix.')
+
+    # Sprawdzenie, czy film istnieje w macierzy
+    if movie_id not in user_movie_matrix.columns:
+        raise ValueError(f'Movie ID {movie_id} not found in the user-movie matrix.')
+
+    # Ekstrakcja danych użytkownika
+    user_ratings = user_movie_matrix.loc[user_id].values.reshape(1, -1)
+
+    # Transformacja danych użytkownika
+    user_transformed = model.named_steps['svd'].transform(user_ratings)
+
+    # Rekonstrukcja ocen użytkownika
+    user_reconstructed = model.named_steps['svd'].inverse_transform(user_transformed)
+
+    # Dodanie średniej oceny użytkownika
+    predicted_rating = user_reconstructed[0, user_movie_matrix.columns.get_loc(movie_id)] + user_means[user_id]
+
     return predicted_rating
 
 
 def filter_movies(movies, phrase):
     return movies[movies['title'].str.contains(str(phrase))]['title'].tolist()
-
