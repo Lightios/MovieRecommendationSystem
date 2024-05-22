@@ -10,10 +10,14 @@ import numpy as np
 import pandas as pd
 
 
-def get_movie_recommendations(user_id, model, user_movie_matrix, movies, n_recommendations=10):
-    # Sprawdzenie, czy użytkownik istnieje w macierzy
-    if user_id not in user_movie_matrix.index:
-        raise ValueError(f'User ID {user_id} not found in the user-movie matrix.')
+def get_movie_recommendations(user_id, model, user_movie_matrix, movies, user_means, n_recommendations=10):
+    # Jeśli użytkownik jest nowy lub nie oceniał jeszcze żadnych filmów
+    if user_id not in user_movie_matrix.index or user_movie_matrix.loc[user_id].isnull().all():
+        # Możemy zwrócić najpopularniejsze filmy (np. te z najwyższymi średnimi ocenami)
+        movie_mean_ratings = user_movie_matrix.mean(axis=0)
+        top_movies = movie_mean_ratings.nlargest(n_recommendations).index
+        recommended_movies = movies[movies['movieId'].isin(top_movies)]
+        return recommended_movies
 
     # Ekstrakcja danych użytkownika
     user_ratings = user_movie_matrix.loc[user_id].values.reshape(1, -1)
@@ -57,13 +61,15 @@ def get_movie_id_by_title(title, movies):
 
 
 def predict_rating(user_id, movie_id, model, user_movie_matrix, user_means):
-    # Sprawdzenie, czy użytkownik istnieje w macierzy
-    if user_id not in user_movie_matrix.index:
-        raise ValueError(f'User ID {user_id} not found in the user-movie matrix.')
-
     # Sprawdzenie, czy film istnieje w macierzy
     if movie_id not in user_movie_matrix.columns:
         raise ValueError(f'Movie ID {movie_id} not found in the user-movie matrix.')
+
+    # Jeśli użytkownik jest nowy lub nie oceniał jeszcze żadnych filmów
+    if user_id not in user_movie_matrix.index or user_movie_matrix.loc[user_id].isnull().all():
+        # Możemy zwrócić średnią ocenę dla filmu
+        overall_movie_mean = user_movie_matrix[movie_id].mean()
+        return overall_movie_mean
 
     # Ekstrakcja danych użytkownika
     user_ratings = user_movie_matrix.loc[user_id].values.reshape(1, -1)
@@ -82,3 +88,18 @@ def predict_rating(user_id, movie_id, model, user_movie_matrix, user_means):
 
 def filter_movies(movies, phrase):
     return movies[movies['title'].str.contains(str(phrase))]['title'].tolist()
+
+
+def update_user_ratings(user_id, new_ratings, user_movie_matrix, user_means):
+    # Dodanie nowych ocen do macierzy
+    for movie_id, rating in new_ratings.items():
+        user_movie_matrix.loc[user_id, movie_id] = rating
+
+    # Aktualizacja średniej oceny użytkownika
+    user_means[user_id] = user_movie_matrix.loc[user_id].mean()
+
+    # Normalizacja ocen użytkownika
+    user_movie_matrix_normalized = user_movie_matrix.sub(user_means, axis=0).fillna(0)
+
+    return user_movie_matrix, user_movie_matrix_normalized, user_means
+
