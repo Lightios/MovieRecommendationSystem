@@ -15,15 +15,18 @@ MDScreen:
 #                mode: "persistent"
 
         MDTextField:
-            id: year_input
-            hint_text: 'Enter Release Year'
+            id: title_input
             mode: "filled"
+
+            MDTextFieldHelperText:
+                text: "Search for a movie by title"
+                mode: "persistent"
 
         MDButton:
             id: search_button
             on_press: app.search_movies()
             MDButtonText:
-                text: 'Search Movies by Year'
+                text: 'Search Movies by title'
 
         MDDropDownItem:
             id: movie_dropdown
@@ -35,8 +38,12 @@ MDScreen:
 
         MDTextField:
             id: rating_input
-            hint_text: 'Enter Rating (0.5-5)'
             mode: "filled"
+            size_hint_x: 0.2
+
+            MDTextFieldHelperText:
+                text: "Enter a rating between 1 and 5"
+                mode: "persistent"
 
         MDButton:
             id: submit_button
