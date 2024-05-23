@@ -87,7 +87,9 @@ def predict_rating(user_id, movie_id, model, user_movie_matrix, user_means):
 
 
 def filter_movies(movies, phrase):
-    return movies[movies['title'].str.contains(str(phrase))]['title'].tolist()
+    dataframe = movies[movies['title'].str.contains(str(phrase))]
+    return dataframe['title'].tolist(), dataframe['movieId'].tolist()
+    # return movies[movies['title'].str.contains(str(phrase))]['title'].tolist()
 
 
 def update_user_ratings(user_id, new_ratings, user_movie_matrix, user_means):

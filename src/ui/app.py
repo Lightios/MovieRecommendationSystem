@@ -1,13 +1,23 @@
 import pandas as pd
+from kivy.lang import Builder
+from kivy.properties import StringProperty
 from kivymd.app import MDApp
+from kivymd.uix.button import MDButton, MDButtonText
+from kivymd.uix.card import MDCard
+from kivymd.uix.label import MDLabel
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.snackbar import MDSnackbar, MDSnackbarText
 
 from src.model.model_functions import get_movie_recommendations, get_movie_id_by_title, \
     filter_movies, predict_rating, update_user_ratings
+from src.ui.widgets.movie_card import MovieCard
+
+Builder.load_file('ui/widgets/movie_card.kv')
 
 
 class MovieRecommendationApp(MDApp):
+    selected_movie = StringProperty()
+
     def __init__(self, svd, user_movie_matrix, movies, user_means, **kwargs):
         super().__init__(**kwargs)
         self.svd = svd
@@ -16,6 +26,8 @@ class MovieRecommendationApp(MDApp):
         self.user_means = user_means
         self.user_id = 2000
         self.user_ratings = {}
+        self.selected_movie_id = None
+        self.selected_card = None
 
     def build(self):
         self.theme_cls.primary_palette = "Blue"
@@ -25,19 +37,16 @@ class MovieRecommendationApp(MDApp):
     def search_movies(self):
         text = self.root.ids.title_input.text
         if text:
-            movie_titles = filter_movies(self.movies, text)
+            movie_titles, movie_ids = filter_movies(self.movies, text)
         else:
+            return
             movie_titles = self.movies['title'].tolist()
 
-        menu_items = [{"text": title, "on_release": lambda x=title: self.set_movie(x)} for title in movie_titles]
-
-        self.root.ids.movie_dropdown.dropdown_menu = MDDropdownMenu(
-            caller=self.root.ids.movie_dropdown,
-            items=menu_items,
-            width_mult=4
-        )
-        self.root.ids.movie_dropdown.text = 'Select a Movie'
-        self.root.ids.movie_dropdown.dropdown_menu.open()
+        self.root.ids.movies_stack.clear_widgets()
+        for title, movie_id in zip(movie_titles, movie_ids):
+            rating = self.user_ratings.get(movie_id, None)
+            card = MovieCard(movie_title=title, movie_id=movie_id, rating=rating)
+            self.root.ids.movies_stack.add_widget(card)
 
     def set_movie(self, title):
         self.root.ids.dropdown_text.text = title
@@ -46,12 +55,14 @@ class MovieRecommendationApp(MDApp):
     def submit_rating(self):
         movie_title = self.get_title()
         if movie_title:
+
             rating = float(self.root.ids.rating_input.text)
 
             movie_id = self.movies[self.movies['title'] == movie_title]['movieId'].values[0]
             self.user_ratings[movie_id] = rating
             text = f'Rating {rating} submitted for {movie_title}'
-
+            self.root.ids.rating_label.text = str(rating)
+            self.selected_card.set_rating(rating)
             MDSnackbar(
                 MDSnackbarText(
                     text=text,
@@ -101,8 +112,8 @@ class MovieRecommendationApp(MDApp):
                 self.root.ids.result_label.text = f'Predicted rating for {movie_title}: {predicted_rating:.2f}'
 
     def get_title(self):
-        title = self.root.ids.dropdown_text.text
-        if title == 'Select a Movie':
+        title = self.selected_movie
+        if title == '':
             MDSnackbar(
                 MDSnackbarText(
                     text='Please select a movie first.',
@@ -111,3 +122,15 @@ class MovieRecommendationApp(MDApp):
             return False
 
         return title
+
+    def select_movie(self, card: MovieCard):
+        self.selected_card = card
+        self.selected_movie = card.movie_title
+        self.selected_movie_id = card.movie_id
+
+        if card.movie_id in self.user_ratings:
+            self.root.ids.rating_label.text = str(self.user_ratings[card.movie_id])
+        else:
+            self.root.ids.rating_label.text = 'Not rated yet'
+
+

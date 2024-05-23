@@ -2,17 +2,11 @@ MDScreen:
     md_bg_color: self.theme_cls.backgroundColor
 
     MDBoxLayout:
+        pos_hint: {'x': 0, 'center_y': 0.5}
+        size_hint: 0.8, 1
         orientation: 'vertical'
         padding: 10
         spacing: 40
-
-#        MDTextField:
-#            id: user_id_input
-#            mode: "filled"
-#
-#            MDTextFieldHelperText:
-#                text: "Enter User ID (or leave blank for new user)"
-#                mode: "persistent"
 
         MDTextField:
             id: title_input
@@ -28,13 +22,25 @@ MDScreen:
             MDButtonText:
                 text: 'Search Movies by title'
 
-        MDDropDownItem:
-            id: movie_dropdown
-            pos_hint: {'center_x': 0.5}
-            on_press: app.search_movies()
-            MDDropDownItemText:
-                text: 'Select a Movie'
-                id: dropdown_text
+        MDScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+
+            MDStackLayout:
+                id: movies_stack
+                padding: 10
+                spacing: 10
+                adaptive_height: True
+                pos_hint: {'x': 0.1}
+                size_hint: 1, None
+                height: self.minimum_height
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        pos_hint: {'center_x': 0.9, 'center_y': 0.5}
+        size_hint: 0.2, 1
+        padding: 10
+        spacing: 40
 
         MDTextField:
             id: rating_input
@@ -63,6 +69,13 @@ MDScreen:
             on_press: app.predict_rating()
             MDButtonText:
                 text: 'Predict Movie Rating'
+        MDLabel:
+            id: selected_movie_label
+            text: app.selected_movie
+
+        MDLabel:
+            id: rating_label
+            text: ""
 
         MDLabel:
             id: result_label
