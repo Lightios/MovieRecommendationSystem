@@ -11,6 +11,7 @@ MDScreen:
         MDTextField:
             id: title_input
             mode: "filled"
+            on_text_validate: app.search_movies()
 
             MDTextFieldHelperText:
                 text: "Type movie's title here"
