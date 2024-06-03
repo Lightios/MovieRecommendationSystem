@@ -1,9 +1,9 @@
 import pandas as pd
 import pickle
 
-from src.model.model_functions import load_model, get_movie_id_by_title, predict_rating, update_user_ratings, \
+from model.model_functions import load_model, get_movie_id_by_title, predict_rating, update_user_ratings, \
     get_movie_recommendations
-from src.ui.app import MovieRecommendationApp
+from ui.app import MovieRecommendationApp
 
 # Załaduj model i dane
 # with open('src/model/svd_model.pkl', 'rb') as f:
