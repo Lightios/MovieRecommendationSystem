@@ -13,8 +13,11 @@ from kivymd.uix.list import MDListItem, MDListItemSupportingText
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.snackbar import MDSnackbar, MDSnackbarText
 
-from model.model_functions import get_movie_recommendations, get_movie_id_by_title, filter_movies, predict_rating, update_user_ratings
+# from model.model_functions import get_movie_recommendations, get_movie_id_by_title, filter_movies, predict_rating, update_user_ratings
 from ui.widgets.movie_card import MovieCard
+
+from src.model.model_functions import filter_movies, convert_dict_to_dataframe, get_predictions, update_user_ratings, \
+    get_movie_id_by_title
 
 Builder.load_file('ui/widgets/movie_card.kv')
 
@@ -22,13 +25,16 @@ Builder.load_file('ui/widgets/movie_card.kv')
 class MovieRecommendationApp(MDApp):
     selected_movie = StringProperty()
 
-    def __init__(self, svd, user_movie_matrix, movies, user_means, **kwargs):
+    def __init__(self, user_movie_matrix, user_movie_matrix_normalized, movies, user_means, len_tags, len_genres, **kwargs):
         super().__init__(**kwargs)
-        self.svd = svd
+        # self.svd = svd
         self.user_movie_matrix = user_movie_matrix
+        self.user_movie_matrix_normalized = user_movie_matrix_normalized
         self.movies = movies
         self.user_means = user_means
-        self.user_id = 2000
+        self.len_tags = len_tags
+        self.len_genres = len_genres
+        self.user_id = 5
         self.user_ratings = {}
         self.selected_movie_id = None
         self.selected_card = None
@@ -71,6 +77,7 @@ class MovieRecommendationApp(MDApp):
                     text=text,
                 ),
             ).open()
+            print(self.user_ratings)
 
     def update_user_ratings(self):
         if not self.user_ratings:
@@ -81,16 +88,13 @@ class MovieRecommendationApp(MDApp):
             ).open()
             return False
 
-        self.user_movie_matrix, self.user_movie_matrix_normalized, self.user_means = update_user_ratings(self.user_id,
-                                                                                                         self.user_ratings,
-                                                                                                         self.user_movie_matrix,
-                                                                                                         self.user_means)
+        self.user_movie_matrix, self.user_movie_matrix_normalized, self.user_means = update_user_ratings(self.user_id, self.user_ratings, self.user_movie_matrix, self.user_movie_matrix_normalized, self.user_means)
         return True
 
     def show_recommendations(self):
         if self.update_user_ratings():
-            recommendations = get_movie_recommendations(self.user_id, self.svd, self.user_movie_matrix_normalized,
-                                                        self.movies, self.user_means)
+            last_movie_ratings = convert_dict_to_dataframe(self.user_ratings)
+            recommendations = get_predictions(self.user_id, last_movie_ratings, self.movies, self.len_genres, self.len_tags, self.user_movie_matrix, self.user_movie_matrix_normalized, self.user_means)
             recommended_titles = recommendations['title'].tolist()
 
             content_items = []

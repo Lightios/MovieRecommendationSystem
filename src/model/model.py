@@ -69,20 +69,6 @@ user_movie_matrix_normalized = user_movie_matrix_normalized.sub(user_means, axis
 user_movie_matrix_normalized.to_pickle('src/model/user_movie_matrix_normalized.pkl')
 user_means.to_pickle('src/model/user_means.pkl')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #compare predictions for test_indexes to real values from user_movie_matrix
 
 #print(test_indexes)

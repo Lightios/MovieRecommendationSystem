@@ -1,8 +1,7 @@
 import pandas as pd
 import pickle
 
-from model.model_functions import load_model, get_movie_id_by_title, predict_rating, update_user_ratings, \
-    get_movie_recommendations
+from model.model_functions import get_movie_id_by_title, update_user_ratings
 from ui.app import MovieRecommendationApp
 
 # Załaduj model i dane
@@ -17,17 +16,23 @@ from ui.app import MovieRecommendationApp
 # Ścieżki do plików
 model_path = 'model/svd_model.pkl'
 user_movie_matrix_path = 'model/user_movie_matrix.pkl'
+user_movie_matrix_normalized_path = 'model/user_movie_matrix_normalized.pkl'
 movies_path = 'model/movies.pkl'
 user_means_path = 'model/user_means.pkl'
+len_tags_genres_path = 'model/len_tags_genres.pkl'
 
 # Ładowanie modelu
-model = load_model(model_path)
+# model = load_model(model_path)
 
 
 # Przykładowy ID użytkownika i tytuł filmu
 user_movie_matrix = pd.read_pickle(user_movie_matrix_path)
+user_movie_matrix_normalized = pd.read_pickle(user_movie_matrix_normalized_path)
 user_means = pd.read_pickle(user_means_path)
 movies = pd.read_pickle(movies_path)
+lengths = pd.read_pickle(len_tags_genres_path)
+len_tags = lengths[0].values[0]
+len_genres = lengths[0].values[1]
 
 # Przykładowy ID użytkownika i tytuł filmu
 # user_id = 20230  # Zakładamy, że użytkownik o ID 1000 jest nowy
@@ -83,4 +88,4 @@ movies = pd.read_pickle(movies_path)
 
 if __name__ == '__main__':
     # MovieRecommendationApp(model, user_movie_matrix, user_movie_matrix_normalized, movies, user_means).run()
-    MovieRecommendationApp(model, user_movie_matrix, movies, user_means).run()
+    MovieRecommendationApp(user_movie_matrix, user_movie_matrix_normalized, movies, user_means, len_tags, len_genres).run()
