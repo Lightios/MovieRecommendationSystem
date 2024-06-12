@@ -100,7 +100,6 @@ class MovieRecommendationApp(MDApp):
                 title = get_movie_title_by_id(movie_id, self.movies)
                 recommended_titles.append(title)
 
-            print(recommended_titles)
             content_items = []
             # Loop over the recommended_titles
             for title in recommended_titles:
