@@ -14,10 +14,11 @@ from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.snackbar import MDSnackbar, MDSnackbarText
 
 # from model.model_functions import get_movie_recommendations, get_movie_id_by_title, filter_movies, predict_rating, update_user_ratings
-from ui.widgets.movie_card import MovieCard
+# from ui.widgets.movie_card import MovieCard
 
 from src.model.model_functions import filter_movies, convert_dict_to_dataframe, get_predictions, update_user_ratings, \
     get_movie_id_by_title
+from src.ui.widgets.movie_card import MovieCard
 
 Builder.load_file('ui/widgets/movie_card.kv')
 
