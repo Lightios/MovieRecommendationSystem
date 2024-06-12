@@ -28,7 +28,6 @@ class MovieRecommendationApp(MDApp):
 
     def __init__(self, user_movie_matrix, user_movie_matrix_normalized, movies, user_means, len_tags, len_genres, **kwargs):
         super().__init__(**kwargs)
-        # self.svd = svd
         self.user_movie_matrix = user_movie_matrix
         self.user_movie_matrix_normalized = user_movie_matrix_normalized
         self.movies = movies
