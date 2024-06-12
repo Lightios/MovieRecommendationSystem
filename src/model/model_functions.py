@@ -38,7 +38,7 @@ def update_user_ratings(user_id, new_ratings, user_movie_matrix, user_movie_matr
     user_movie_matrix = user_movie_matrix.add(user_means, axis=0)
 
     # dodaj średnią ocen do user_movie_matrix_normalized dla user_id z user_means
-    user_movie_matrix_normalized.loc[user_id] = user_movie_matrix_normalized.loc[user_id] + user_means[user_id]
+    user_movie_matrix_normalized = user_movie_matrix_normalized.add(user_means, axis=0)
 
     # Dodanie nowych ocen do macierzy
     for movie_id, rating in new_ratings.items():
@@ -54,7 +54,7 @@ def update_user_ratings(user_id, new_ratings, user_movie_matrix, user_movie_matr
     user_means[user_id] = user_movie_matrix.loc[user_id].mean()
 
     # Odejmij średnie ocen z user_means od user_movie_matrix_normalized
-    user_movie_matrix_normalized.loc[user_id] = user_movie_matrix_normalized.loc[user_id] + user_means[user_id]
+    user_movie_matrix_normalized = user_movie_matrix_normalized.sub(user_means, axis=0)
 
     return user_movie_matrix, user_movie_matrix_normalized, user_means
 
