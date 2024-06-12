@@ -14,12 +14,11 @@ from ui.app import MovieRecommendationApp
 # Załaduj model i dane
 
 # Ścieżki do plików
-model_path = 'model/svd_model.pkl'
-user_movie_matrix_path = 'model/user_movie_matrix.pkl'
-user_movie_matrix_normalized_path = 'model/user_movie_matrix_normalized.pkl'
-movies_path = 'model/movies.pkl'
-user_means_path = 'model/user_means.pkl'
-len_tags_genres_path = 'model/len_tags_genres.pkl'
+user_movie_matrix_path = 'src/model/user_movie_matrix.pkl'
+user_movie_matrix_normalized_path = 'src/model/user_movie_matrix_normalized.pkl'
+movies_path = 'src/model/movies.pkl'
+user_means_path = 'src/model/user_means.pkl'
+len_tags_genres_path = 'src/model/len_tags_genres.pkl'
 
 # Ładowanie modelu
 # model = load_model(model_path)

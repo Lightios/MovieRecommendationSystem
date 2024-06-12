@@ -56,6 +56,11 @@ def update_user_ratings(user_id, new_ratings, user_movie_matrix, user_movie_matr
     # Odejmij średnie ocen z user_means od user_movie_matrix_normalized
     user_movie_matrix_normalized = user_movie_matrix_normalized.sub(user_means, axis=0)
 
+    # Zapisz macierz użytkownik-film i normalizowane średnie
+    user_movie_matrix_normalized.to_pickle('src/model/user_movie_matrix_normalized.pkl')
+    user_means.to_pickle('src/model/user_means.pkl')
+    user_movie_matrix.to_pickle('src/model/user_movie_matrix.pkl')
+
     return user_movie_matrix, user_movie_matrix_normalized, user_means
 
 

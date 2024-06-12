@@ -16,7 +16,7 @@ from kivymd.uix.snackbar import MDSnackbar, MDSnackbarText
 # from model.model_functions import get_movie_recommendations, get_movie_id_by_title, filter_movies, predict_rating, update_user_ratings
 # from ui.widgets.movie_card import MovieCard
 
-from model.model_functions import filter_movies, convert_dict_to_dataframe, get_predictions, update_user_ratings, \
+from model.model_functions import filter_movies, convert_dict_to_dataframe, get_movie_title_by_id, get_predictions, update_user_ratings, \
     get_movie_id_by_title
 from ui.widgets.movie_card import MovieCard
 
@@ -96,8 +96,12 @@ class MovieRecommendationApp(MDApp):
         if self.update_user_ratings():
             last_movie_ratings = convert_dict_to_dataframe(self.user_ratings)
             recommendations = get_predictions(self.user_id, last_movie_ratings, self.movies, self.len_genres, self.len_tags, self.user_movie_matrix, self.user_movie_matrix_normalized, self.user_means)
-            recommended_titles = recommendations['title'].tolist()
+            recommended_titles = []
+            for movie_id in recommendations:
+                title = get_movie_title_by_id(movie_id, self.movies)
+                recommended_titles.append(title)
 
+            print(recommended_titles)
             content_items = []
             # Loop over the recommended_titles
             for title in recommended_titles:
