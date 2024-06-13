@@ -18,7 +18,7 @@ Aby uruchomić ten projekt, wykonaj następujące kroki:
 4. Uruchom plik `main.py` za pomocą Pythona.
 
 ```bash
-git clone [<repo_url](https://github.com/Lightios/MovieRecommendationSystem)>
+git clone https://github.com/Lightios/MovieRecommendationSystem
 cd <project_directory>
 pip install -r requirements.txt
 python src/main.py
