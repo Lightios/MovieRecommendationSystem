@@ -1,3 +1,6 @@
+import json
+
+import numpy as np
 import pandas as pd
 from kivy.lang import Builder
 from kivy.properties import StringProperty
@@ -12,6 +15,7 @@ from kivymd.uix.label import MDLabel
 from kivymd.uix.list import MDListItem, MDListItemSupportingText
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.snackbar import MDSnackbar, MDSnackbarText
+from kivy.core.window import Window
 
 # from model.model_functions import get_movie_recommendations, get_movie_id_by_title, filter_movies, predict_rating, update_user_ratings
 # from ui.widgets.movie_card import MovieCard
@@ -39,9 +43,14 @@ class MovieRecommendationApp(MDApp):
         self.selected_movie_id = None
         self.selected_card = None
 
+        with open('src/user_ratings.json', 'r') as f:
+            int_keys = json.load(f)
+            self.user_ratings = {np.int64(k): v for k, v in int_keys.items()}
+
     def build(self):
         self.theme_cls.primary_palette = "Blue"
         self.theme_cls.theme_style = "Dark"
+        Window.maximize()
         return self.root
 
     def search_movies(self):
@@ -83,7 +92,10 @@ class MovieRecommendationApp(MDApp):
                     text=text,
                 ),
             ).open()
-            print(self.user_ratings)
+
+            with open('src/user_ratings.json', 'w') as f:
+                int_keys = {int(k): v for k, v in self.user_ratings.items()}
+                json.dump(int_keys, f)
 
     def update_user_ratings(self):
         if not self.user_ratings:

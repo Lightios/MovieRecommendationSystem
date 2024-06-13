@@ -67,6 +67,7 @@ def update_user_ratings(user_id, new_ratings, user_movie_matrix, user_movie_matr
 def convert_dict_to_dataframe(dictionary):
     return pd.DataFrame(list(dictionary.items()), columns=['movieId', 'rating'])
 
+
 #  last_movie_ratings - dataframe postaci:
 #  last_movie_ratings = pd.DataFrame()
 #  last_movie_ratings['movieId'] = [136020, 1, 166461, 2948, 24]
