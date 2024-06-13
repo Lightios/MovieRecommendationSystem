@@ -74,10 +74,10 @@ class MovieRecommendationApp(MDApp):
         movie_title = self.get_title()
         if movie_title:
             rating = float(self.root.ids.rating_input.text)
-            if rating < 0.5 or rating > 5.0:
+            if rating < 1 or rating > 5.0:
                 MDSnackbar(
                     MDSnackbarText(
-                        text='Rating must be between 0.5 and 5.0',
+                        text='Rating must be between 1 and 5.0',
                     ),
                 ).open()
                 return
