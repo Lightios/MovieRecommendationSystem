@@ -33,6 +33,27 @@ def filter_movies(movies, phrase):
     # return movies[movies['title'].str.contains(str(phrase))]['title'].tolist()
 
 
+def add_new_user(user_id, user_movie_matrix, user_movie_matrix_normalized, user_means, movie_means):
+    # Do pd.dataset user_movie_matrix dodaj nowego użytkownika z samymi NaN
+    user_movie_matrix.loc[user_id] = np.nan
+
+    # Do pd.dataset user_movie_matrix_normalized dodaj nowego użytkownika z samymi średnimi ocenami filmów
+    user_movie_matrix_normalized.loc[user_id] = movie_means
+
+    # Oblicz średnią ocenę użytkownika i dodaj do user_means
+    user_means[user_id] = user_movie_matrix.loc[user_id].mean()
+
+    # Odejmij średnie ocen z user_means od user_movie_matrix_normalized dla nowego użytkownika
+    user_movie_matrix_normalized.loc[user_id] = user_movie_matrix_normalized.loc[user_id].sub(user_means[user_id])
+
+    # Zapisz macierz użytkownik-film i normalizowane średnie
+    user_movie_matrix_normalized.to_pickle('src/model/user_movie_matrix_normalized.pkl')
+    user_means.to_pickle('src/model/user_means.pkl')
+    user_movie_matrix.to_pickle('src/model/user_movie_matrix.pkl')
+
+    return user_movie_matrix, user_movie_matrix_normalized, user_means
+
+
 def update_user_ratings(user_id, new_ratings, user_movie_matrix, user_movie_matrix_normalized, user_means):
     # Do macierzy user_movie_matrix dodajemy srednią ocenę uzytkownika z user_means
     user_movie_matrix = user_movie_matrix.add(user_means, axis=0)

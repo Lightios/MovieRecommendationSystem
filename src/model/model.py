@@ -56,7 +56,8 @@ user_movie_matrix = ratings.pivot(index='userId', columns='movieId', values='rat
 user_movie_matrix.to_pickle('src/model/user_movie_matrix.pkl')
 
 # Normalizacja ocen - zamiast NaN wstawmy średnią ocenę filmu
-user_movie_matrix_normalized = user_movie_matrix.fillna(user_movie_matrix.mean(axis=0)).fillna(0)
+movie_means = user_movie_matrix.mean(axis=0)
+user_movie_matrix_normalized = user_movie_matrix.fillna(movie_means).fillna(0)
 # Normalizacja ocen - odejmowanie średniej oceny użytkownika
 user_means = user_movie_matrix_normalized.mean(axis=1)
 user_movie_matrix_normalized = user_movie_matrix_normalized.sub(user_means, axis=0).fillna(0)
@@ -64,3 +65,4 @@ user_movie_matrix_normalized = user_movie_matrix_normalized.sub(user_means, axis
 # Zapisz macierz użytkownik-film i normalizowane średnie
 user_movie_matrix_normalized.to_pickle('src/model/user_movie_matrix_normalized.pkl')
 user_means.to_pickle('src/model/user_means.pkl')
+movie_means.to_pickle('src/model/movie_means.pkl')
