@@ -33,5 +33,3 @@ Możesz wybrać film, klikając na kartę filmu. Wybrany film zostanie podświet
 Możesz dodać ocenę dla wybranego filmu, wpisując ocenę w pole tekstowe i naciskając przycisk "Submit Rating". Twoja ocena zostanie dodana do systemu.
 
 Aby uzyskać rekomendacje filmów, naciśnij przycisk "Get Recommendations". System wygeneruje listę filmów, które mogą Ci się spodobać na podstawie Twoich ocen.
-
-Ten projekt jest dostępny na licencji MIT. Zobacz plik `LICENSE` dla szczegółów.
