@@ -50,7 +50,6 @@ class MovieRecommendationApp(MDApp):
             movie_titles, movie_ids = filter_movies(self.movies, text)
         else:
             return
-            movie_titles = self.movies['title'].tolist()
 
         self.root.ids.movies_stack.clear_widgets()
         for title, movie_id in zip(movie_titles, movie_ids):
@@ -66,6 +65,13 @@ class MovieRecommendationApp(MDApp):
         movie_title = self.get_title()
         if movie_title:
             rating = float(self.root.ids.rating_input.text)
+            if rating < 0.5 or rating > 5.0:
+                MDSnackbar(
+                    MDSnackbarText(
+                        text='Rating must be between 0.5 and 5.0',
+                    ),
+                ).open()
+                return
 
             movie_id = self.movies[self.movies['title'] == movie_title]['movieId'].values[0]
             self.user_ratings[movie_id] = rating
