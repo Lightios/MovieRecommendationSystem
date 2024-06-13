@@ -33,7 +33,6 @@ movies = pd.read_pickle(movies_path)
 lengths = pd.read_pickle(len_tags_genres_path)
 len_tags = lengths[0].values[0]
 len_genres = lengths[0].values[1]
-movie_means = pd.read_pickle(movie_means_path)
 
 # Przykładowy ID użytkownika i tytuł filmu
 # user_id = 20230  # Zakładamy, że użytkownik o ID 1000 jest nowy

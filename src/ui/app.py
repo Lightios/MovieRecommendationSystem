@@ -34,7 +34,7 @@ class MovieRecommendationApp(MDApp):
         self.user_means = user_means
         self.len_tags = len_tags
         self.len_genres = len_genres
-        self.user_id = 5
+        self.user_id = 1
         self.user_ratings = {}
         self.selected_movie_id = None
         self.selected_card = None
@@ -87,7 +87,6 @@ class MovieRecommendationApp(MDApp):
                 ),
             ).open()
             return False
-
         self.user_movie_matrix, self.user_movie_matrix_normalized, self.user_means = update_user_ratings(self.user_id, self.user_ratings, self.user_movie_matrix, self.user_movie_matrix_normalized, self.user_means)
         return True
 
